@@ -1,9 +1,0 @@
-{
-    "location": {
-        "city": "Phoenix",
-        "state": "Arizona"
-    },
-    "temperature": 115,
-    "windSpeed": 50,
-    "timestamp": 1627335205
-}

@@ -11,6 +11,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import com.amazonaws.services.schemaregistry.deserializers.GlueSchemaRegistryKafkaDeserializer;
 import com.amazonaws.services.schemaregistry.utils.AWSSchemaRegistryConstants;
 import com.amazonaws.services.schemaregistry.serializers.json.JsonDataWithSchema;
+import software.amazon.awssdk.services.glue.model.DataFormat;
 
 import java.util.Properties;
 import java.io.FileInputStream;
@@ -27,7 +28,6 @@ public class RunKafkaConsumer {
 			System.out.println("Please provide command line arguments: configPath topic");
 			System.exit(1);
 		}
-		System.out.println("Hello World!");
 		final Properties props = loadConfig(args[0]);
 		System.out.println(props);
 
@@ -35,10 +35,10 @@ public class RunKafkaConsumer {
 
 		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, GlueSchemaRegistryKafkaDeserializer.class.getName());
-		props.put(AWSSchemaRegistryConstants.AWS_REGION, "us-west-2");
-		props.put(AWSSchemaRegistryConstants.DATA_FORMAT, "JSON");
-		props.put(AWSSchemaRegistryConstants.REGISTRY_NAME, "GsrBlogRegistry");
-		props.put(AWSSchemaRegistryConstants.SCHEMA_NAME, "GsrBlogSchema");
+		props.put(AWSSchemaRegistryConstants.AWS_REGION, "ap-southeast-2");
+		props.put(AWSSchemaRegistryConstants.DATA_FORMAT, DataFormat.JSON.name());
+		props.put(AWSSchemaRegistryConstants.REGISTRY_NAME, "testregistry");
+		props.put(AWSSchemaRegistryConstants.SCHEMA_NAME, "friends");
 
 		props.put(ConsumerConfig.GROUP_ID_CONFIG, "demo-consumer-1");
 		props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");

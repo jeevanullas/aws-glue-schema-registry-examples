@@ -12,6 +12,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import com.amazonaws.services.schemaregistry.serializers.GlueSchemaRegistryKafkaSerializer;
 import com.amazonaws.services.schemaregistry.serializers.json.JsonDataWithSchema;
 import com.amazonaws.services.schemaregistry.utils.AWSSchemaRegistryConstants;
+import software.amazon.awssdk.services.glue.model.DataFormat;
 
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -55,31 +56,22 @@ public class RunKafkaProducer {
 		props.put(ProducerConfig.ACKS_CONFIG, "all");
 		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, GlueSchemaRegistryKafkaSerializer.class.getName());
-		props.put(AWSSchemaRegistryConstants.AWS_REGION, "us-west-2");
-		props.put(AWSSchemaRegistryConstants.DATA_FORMAT, "JSON");
+		props.put(AWSSchemaRegistryConstants.AWS_REGION, "ap-southeast-2");
+		props.put(AWSSchemaRegistryConstants.DATA_FORMAT, DataFormat.JSON.name());
 
 		props.put(AWSSchemaRegistryConstants.SCHEMA_AUTO_REGISTRATION_SETTING, "true");
-		props.put(AWSSchemaRegistryConstants.REGISTRY_NAME, "GsrBlogRegistry");
-		props.put(AWSSchemaRegistryConstants.SCHEMA_NAME, "GsrBlogSchema");
+		props.put(AWSSchemaRegistryConstants.REGISTRY_NAME, "testregistry");
+		props.put(AWSSchemaRegistryConstants.SCHEMA_NAME, "friends");
 
 		Producer<String, JsonDataWithSchema> producer = new KafkaProducer<String, JsonDataWithSchema>(props);
 
-		String schemaString = new JSONObject(new JSONTokener(new FileReader("schema.json"))).toString();
+		String schemaString = new JSONObject(new JSONTokener(new FileReader("/home/ec2-user/aws-glue-schema-registry-examples/schema.json"))).toString();
+		String payloadString = new JSONObject(new JSONTokener(new FileReader("/home/ec2-user/aws-glue-schema-registry-examples/friends.json"))).toString();
 
-		String payload1String = new JSONObject(new JSONTokener(new FileReader("payload1.json"))).toString();
-		String payload2String = new JSONObject(new JSONTokener(new FileReader("payload2.json"))).toString();
-		String payload3String = new JSONObject(new JSONTokener(new FileReader("payload3.json"))).toString();
+		JsonDataWithSchema jsonSchemaWithData = JsonDataWithSchema.builder(schemaString, payloadString).build();
 
 		List<JsonDataWithSchema> genericJsonRecords = new ArrayList<>();
-
-		final JsonDataWithSchema jsonRecord1 = JsonDataWithSchema.builder(schemaString, payload1String).build();
-		genericJsonRecords.add(jsonRecord1);
-
-		final JsonDataWithSchema jsonRecord2 = JsonDataWithSchema.builder(schemaString, payload2String).build();
-		genericJsonRecords.add(jsonRecord2);
-
-		final JsonDataWithSchema jsonRecord3 = JsonDataWithSchema.builder(schemaString, payload3String).build();
-		genericJsonRecords.add(jsonRecord3);
+		genericJsonRecords.add(jsonSchemaWithData);
 
 		try {
 			for (int i = 0; i < genericJsonRecords.size(); i++) {
@@ -92,8 +84,7 @@ public class RunKafkaProducer {
 				System.out.println("Sent message " + i);
 				Thread.sleep(1000L);
 			}
-			System.out.println(
-					"Successfully produced " + genericJsonRecords.size() + " messages to a topic called " + topic);
+			System.out.println("Successfully produced " + genericJsonRecords.size() + " messages to a topic called " + topic);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
