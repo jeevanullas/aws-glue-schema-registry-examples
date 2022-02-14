@@ -1,20 +1,25 @@
 {
-  "$id": "https://example.com/person.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Person",
   "type": "object",
+  "connect.index": 10,
+  "connect.type": "struct",
   "properties": {
     "firstName": {
       "type": "string",
+      "connect.index": 7,
       "description": "The person's first name."
     },
     "lastName": {
       "type": "string",
+      "connect.index": 7,
       "description": "The person's last name."
     },
     "age": {
-      "description": "Age in years which must be equal to or greater than zero.",
       "type": "integer",
+      "connect.index": 2,
+      "connect.type": "int32",
+      "description": "Age in years which must be equal to or greater than zero.",
       "minimum": 0
     }
   }
